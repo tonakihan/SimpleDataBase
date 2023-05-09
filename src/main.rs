@@ -244,10 +244,7 @@ fn insert_db(conn_db: &Connection) -> Result<()> {
         let semester: u32 = get_input("Введи семестр ").parse()
             .expect("Filed to convert semester in in_vedom");
         
-        let mut count: u8 = get_input("Введи кол-во новых записей ").parse()
-            .expect("Filed to convert count in in_vedom");
-
-        while count > 0 {
+        loop {
             let num_stud = get_student(conn_db)?;
             let marks: u32 = get_input("Введи оценку (0,2..5) ").parse()
                 .expect("Filed to convert marks in in_vedom");
@@ -257,7 +254,10 @@ fn insert_db(conn_db: &Connection) -> Result<()> {
                 VALUES (?1,?2,?3,?4)",
                 [&num_stud, &num_subj, &marks, &semester],
             )?;
-            count -= 1;
+
+            if get_input("Для завершения нажимте q ").as_str() == "q" {
+                break;
+            }
         }
         Ok(())
     }
@@ -417,6 +417,7 @@ fn insert_db(conn_db: &Connection) -> Result<()> {
                 let row = row?;
                 println!("{:<4}|{:8}", row.0, row.1);
             }
+            println!();
             num_learn = get_input("Введи ID предмета ");
         } else if rows_count == 1 {
             num_learn = rows[0].as_ref().unwrap().0.to_string();
